@@ -25,7 +25,7 @@ $ cd
 
 ```
 ## Authors
-Cheikh AHmet Tidiane Chérif MARONE 
+Cheikh Ahmet Tidiane Chérif MARONE 
 * maronho16@gmail.com 
 * https://bitbucket.org/bruaba/
 
@@ -34,4 +34,5 @@ Elio KHATER
 ## School
 * ESIREM https://esirem.u-bourgogne.fr/
 * Year: 2020
-* With Sergey KIRGIZOV
+* With Sergey KIRGIZOV sergey.kirgizov@u-bourgogne.fr
+* Source : https://kirgizov.link/teaching/esirem/advanced-information-systems-2020/TP-PROJET.pdf
