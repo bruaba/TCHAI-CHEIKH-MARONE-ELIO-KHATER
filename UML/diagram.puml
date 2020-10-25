@@ -25,7 +25,7 @@ class Deal {
 	- Integer receiver
 }
 
-Person "1..*" -- "1..*" Transaction : to do
+Person "1..*" -- "1..*" Deal : to do
 Person "1" -- "1..*" Account : own
 
 @enduml
