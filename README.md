@@ -1,6 +1,6 @@
-# Tchaï - Chaîne des transactions
+# Tchaï - Chain of transactions
 
-Projet Systèmes d’information avancés
+Advanced Information Systems Project
 
 ## Table of contents
 * [General info](#general-info)
@@ -14,7 +14,7 @@ Projet Systèmes d’information avancés
 Design an electronic transaction system with guaranteed integrity, accessible by the HTTP protocol
 
 
-## Technology
+## Technolog
 Project is created with:
 * Python version: 3.8
 * Flask
