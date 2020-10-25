@@ -1,0 +1,32 @@
+```puml
+@startuml
+
+
+
+class Person {
+	- Integer id_person
+	- String name
+	- String surname
+
+	+ Integer getId()
+}
+
+class Account {
+	- Integer id_account
+	- Float balance
+}
+
+class Deal {
+
+	- Integer id_deal
+	- Float amount
+	- DateTime moment
+	- Integer sender
+	- Integer receiver
+}
+
+Person "1..*" -- "1..*" Transaction : to do
+Person "1" -- "1..*" Account : own
+
+@enduml
+```

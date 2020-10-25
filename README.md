@@ -4,7 +4,8 @@ Projet Systèmes d’information avancés
 
 ## Table of contents
 * [General info](#general-info)
-* [Technologies](#technologies)
+* [Technology](#technology)
+* [Diagram](#diagram)
 * [Setup](#setup)
 * [School](#school)
 * [Authors](#authors)
@@ -13,15 +14,20 @@ Projet Systèmes d’information avancés
 Design an electronic transaction system with guaranteed integrity, accessible by the HTTP protocol
 
 
-## Technologies
+## Technology
 Project is created with:
 * Python version: 3.8
+* Flask
+* Sqlite3
+
+## Diagram
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/bruaba/TCHAI-CHEIKH-MARONE-ELIO-KHATER/main/UML/diagram.puml)
 	
 ## Setup
 To run this project, install it locally using:
 
 ```
-$ cd 
+$ python3 tchai.py
 
 ```
 ## Authors
@@ -36,3 +42,4 @@ Elio KHATER
 * Year: 2020
 * With Sergey KIRGIZOV sergey.kirgizov@u-bourgogne.fr
 * Source : https://kirgizov.link/teaching/esirem/advanced-information-systems-2020/TP-PROJET.pdf
+
