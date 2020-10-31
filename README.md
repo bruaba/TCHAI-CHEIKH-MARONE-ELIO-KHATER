@@ -7,6 +7,7 @@ Advanced Information Systems Project
 * [Technology](#technology)
 * [Diagram](#diagram)
 * [Setup](#setup)
+* [Test](#test)
 * [School](#school)
 * [Authors](#authors)
 
@@ -14,7 +15,7 @@ Advanced Information Systems Project
 Design an electronic transaction system with guaranteed integrity, accessible by the HTTP protocol
 
 
-## Technolog
+## Technology
 Project is created with:
 * Python version: 3.8
 * Flask
@@ -27,9 +28,25 @@ Project is created with:
 To run this project, install it locally using:
 
 ```
+$ apt-get install python3-pip
+$ pip3 install flask
+$ apt-get install sqlite3
 $ python3 tchai.py
 
 ```
+
+## Test
+1st test it's changing amount value
+
+```
+$ cd /Test
+$ chmod +x modifyTransaction.sh
+$ ./modifyTransaction.sh
+
+```
+That changes the amount value by 8000 for example
+So for that i change execute() function of tchai.py by executescript(). Because execute() execute one statement at a time.
+
 ## Authors
 Cheikh Ahmet Tidiane Chérif MARONE 
 * maronho16@gmail.com 
