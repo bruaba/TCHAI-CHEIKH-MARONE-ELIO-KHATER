@@ -9,6 +9,35 @@ app = Flask(__name__)
 def hello():
 	return 'Hello \n', 200
 
+
+#integrity
+@app.route('/integrity/<idTransaction>', methods=['GET'])
+def verifIntegrity(idTransaction):
+	connexion = sqlite3.connect("DataBase/tchai.db")
+	cur = connexion.cursor()
+	sql = 'SELECT amount, hash FROM deal WHERE id_transaction = ?;'
+	cur.execute(sql,[idTransaction])
+
+	result = "<table style='border:1px solid red'>"   
+	for row in cur:
+		result = result + "<tr>"
+		amount = row[0]
+		key = str(amount)
+		newHash = blake2b(key.encode()).hexdigest()
+		oldHash = row[1]
+	
+	result = result + "</tr>" 
+	connexion.commit()
+	cur.close()
+	connexion.close()
+	if newHash == oldHash:
+		return '<html><body> C\'est bon:' + oldHash + '</body></html>', 200
+	else :
+		return '<html><body> C\'est pas bon: ancien hash =' + oldHash + '<br> new hash =' + newHash + ' et </body></html>', 500
+	
+
+
+
 #Deal
 @app.route('/deal/<idSender>/<idReceiver>/<amount>', methods=['POST'])
 def addDeal (idSender, idReceiver, amount):
@@ -49,7 +78,6 @@ def verif(idPerson):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
 	sql = 'SELECT * FROM deal WHERE sender  = '+idPerson+' or receiver = '+idPerson+' ORDER BY moment ASC'
-
 	cur.executescript(sql)
 	result = "<table style='border:1px solid red'>"   
 	for row in cur:
