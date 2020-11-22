@@ -8,6 +8,7 @@ Advanced Information Systems Project
 * [Diagram](#diagram)
 * [Setup](#setup)
 * [Test](#test)
+* [Hash](#hash)
 * [School](#school)
 * [Authors](#authors)
 
@@ -46,6 +47,23 @@ $ ./modifyTransaction.sh
 ```
 That changes the amount value by 8000 for example
 So for that i change execute() function of tchai.py by executescript(). Because execute() execute one statement at a time.
+
+## Hash
+Hash function : BLAKE2b()
+
+[BLAKE2](https://docs.python.org/fr/3.7/library/hashlib.html#blake2) is a cryptographic hash function defined in RFC 7693 that comes in two flavors:
+
+* BLAKE2b, optimized for 64-bit platforms and produces digests of any size between 1 and 64 bytes,
+
+* BLAKE2s, optimized for 8- to 32-bit platforms and produces digests of any size between 1 and 32 bytes.
+
+BLAKE2 supports keyed mode (a faster and simpler replacement for HMAC), salted hashing, personalization, and tree hashing.
+
+Contrary SHA256 was based on SHA1 (which is weak), BLAKE was based on ChaCha20 (which is strong).
+
+BLAKE2 is resisted collision, Preimage, Chosen prefix collision attack, ... 
+
+[BLAKE2b](https://fr.qaz.wiki/wiki/BLAKE_(hash_function)) is faster than MD5, SHA-1, SHA-2 and SHA-3, on 64-bit x86-64 and ARM architectures. BLAKE2 offers greater security than SHA-2 and similar to that of SHA-3: immunity to length extension, undifferentiability of a random oracle, etc.
 
 ## Authors
 Cheikh Ahmet Tidiane Chérif MARONE 

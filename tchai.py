@@ -1,8 +1,8 @@
 from flask import *
 import sqlite3
+from hashlib import blake2b
 
 app = Flask(__name__)
-
 
 #Home
 @app.route('/')
@@ -14,8 +14,10 @@ def hello():
 def addDeal (idSender, idReceiver, amount):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
-	sql = "INSERT INTO deal (amount, sender, receiver) VALUES (?,?,?)"
-	cur.execute(sql,[amount, idSender, idReceiver])
+	key = str(amount)
+	ahash = blake2b(key.encode()).hexdigest()
+	sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
+	cur.execute(sql,[amount, idSender, idReceiver, ahash])
 	connexion.commit()
 	cur.close()
 	connexion.close()
@@ -28,6 +30,27 @@ def getDealPerson (idPerson):
 	cur = connexion.cursor()
 	sql = 'SELECT * FROM deal WHERE sender  = '+idPerson+' or receiver = '+idPerson+' ORDER BY moment ASC'
 	cur.executescript(sql)
+	rows = cur.fetchall()
+	result = "<table style='border:1px solid red'>"   
+	for row in rows:
+		result = str(row) + "<tr>"
+		for x in row:
+			result = result + "<td>" + str(x) + "</td>"
+	result = result + "</tr>" 
+	connexion.commit()
+
+	cur.close()
+	connexion.close()
+	return '<html><body>' + result + '</body></html>', 200
+
+@app.route('/test/<idPerson>', methods=['GET'])
+def verif(idPerson):
+
+	connexion = sqlite3.connect("DataBase/tchai.db")
+	cur = connexion.cursor()
+	sql = 'SELECT * FROM deal WHERE sender  = '+idPerson+' or receiver = '+idPerson+' ORDER BY moment ASC'
+
+	cur.executescript(sql)
 	result = "<table style='border:1px solid red'>"   
 	for row in cur:
 		result = result + "<tr>"
@@ -38,14 +61,8 @@ def getDealPerson (idPerson):
 
 	cur.close()
 	connexion.close()
-	return '<html><body>' + sql + '</body></html>', 200
+	return '<html><body>' + result + '</body></html>', 200
 
-#etat actuel du test d'injection sql
-#mais marche pas 
-#curl -X GET "http://0.0.0.0:5000/deal/1'%20;%20--%20UPDATE%20DEAL%20SET%20amount%20=%2012000%20WHERE%20sid_deal=1;%20select%20true;"
-#curl -X GET "http://0.0.0.0:5000/deal/'1%20UNION%20\%20UPDATE%20DEAL%20SET%20amount%20=%20800%20WHERE%20sender%20=%201%20;%20--"
-
-#curl -X GET "http://0.0.0.0:5000/deal/''%20;%20UPDATE%20DEAL%20SET%20amount%20=%208000%20WHERE%20ssender=1;--%20"
 
 @app.route('/deal', methods=['GET'])
 def getDeal ():
@@ -97,7 +114,4 @@ def addUser (name, surname):
 	return 'User created.\n', 200
 
 app.run(host='0.0.0.0', debug=True)
-
-#commande curl pour ajout d'un user 
-#curl -X POST "http://localhost:5000/user/sow/samba"
 

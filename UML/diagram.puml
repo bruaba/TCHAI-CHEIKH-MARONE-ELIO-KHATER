@@ -23,6 +23,7 @@ class Deal {
 	- DateTime moment
 	- Integer sender
 	- Integer receiver
+	- String hash
 }
 
 Person "1..*" -- "1..*" Deal : to do
