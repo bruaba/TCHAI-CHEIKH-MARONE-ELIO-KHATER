@@ -43,7 +43,8 @@ def verifIntegrity(idTransaction):
 def addDeal (idSender, idReceiver, amount):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
-	key = str(amount)
+	amountFloat = float(amount)
+	key = str(amountFloat)
 	ahash = blake2b(key.encode()).hexdigest()
 	sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
 	cur.execute(sql,[amount, idSender, idReceiver, ahash])
