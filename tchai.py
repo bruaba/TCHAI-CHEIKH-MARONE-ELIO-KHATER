@@ -9,11 +9,12 @@ app = Flask(__name__)
 def hello():
 	return 'Hello \n', 200
 
+#exercice 7
 #integrity
 #cette fonction nous permet de verifier l'integrité d'une transaction.
 #elle nous dit que la transcation a été modifier ou non
 
-@app.route('/integrity/<idTransaction>', methods=['GET'])
+@app.route('/integrity/v2/<idTransaction>', methods=['GET'])
 def verifIntegrity(idTransaction):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
@@ -38,6 +39,42 @@ def verifIntegrity(idTransaction):
 		return '<html><body> Donnée corrompu </body></html>', 500
 	
 
+#exercice 10
+#integrity
+
+@app.route('/integrity/v3/<idTransaction>', methods=['GET'])
+def verifIntegrityV3(idTransaction):
+	connexion = sqlite3.connect("DataBase/tchai.db")
+	cur = connexion.cursor()
+	sql = 'SELECT hash FROM deal WHERE id_transaction = ?;'
+	oldHashP = int(idTransaction) - 1
+	cur.execute(sql,[oldHashP])
+	for row in cur:
+		oldHashP = row[0]
+
+	oldHashP = str(oldHashP)
+	sql = 'SELECT amount, hash FROM deal WHERE id_transaction = ?;'
+	cur.execute(sql,[idTransaction])
+
+	result = "<table style='border:1px solid red'>"   
+	for row in cur:
+		result = result + "<tr>"
+		amount = row[0]
+		key = str(amount)
+		key = key + oldHashP
+		newHash = blake2b(key.encode()).hexdigest()
+		oldHash = row[1]
+	
+	result = result + "</tr>" 
+	connexion.commit()
+	cur.close()
+	connexion.close()
+	if newHash == oldHash:
+		return '<html><body> C\'est bon</body></html>', 200
+	else :
+		return '<html><body> Donnée corrompu </body></html>', 500
+	
+
 
 
 #Deal
@@ -48,7 +85,7 @@ def addDeal (idSender, idReceiver, amount):
 	#1er methode avec seulement le montant
 	sql = 'SELECT id_transaction, hash FROM deal;'
 	cur.execute(sql)
-	
+
 	for row in cur:
 		oldHash = row[1]
 		lastId = row[0]
@@ -63,7 +100,7 @@ def addDeal (idSender, idReceiver, amount):
 	connexion.commit()
 	cur.close()
 	connexion.close()
-	return 'Deal '+str(oldHash)+' Done.\n', 200
+	return 'Deal Done.\n', 200
 
 @app.route('/deal/<idPerson>', methods=['GET'])
 def getDealPerson (idPerson):

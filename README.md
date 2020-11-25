@@ -9,6 +9,7 @@ Advanced Information Systems Project
 * [Setup](#setup)
 * [Test](#test)
 * [Hash](#hash)
+* [Tag](#tag)
 * [School](#school)
 * [Authors](#authors)
 
@@ -66,6 +67,11 @@ Contrary SHA256 was based on SHA1 (which is weak), BLAKE was based on ChaCha20 (
 BLAKE2 is resisted collision, Preimage, Chosen prefix collision attack, ... 
 
 [BLAKE2b](https://fr.qaz.wiki/wiki/BLAKE_(hash_function)) is faster than MD5, SHA-1, SHA-2 and SHA-3, on 64-bit x86-64 and ARM architectures. BLAKE2 offers greater security than SHA-2 and similar to that of SHA-3: immunity to length extension, undifferentiability of a random oracle, etc.
+
+
+## Tag
+The tag complete (1.0), correspond to the end of the exercises.
+During the exercise we use a 0.5 tag for example and at the end of the version as stipulated in the subject we tag with 1.0
 
 ## Authors
 Cheikh Ahmet Tidiane Chérif MARONE 
