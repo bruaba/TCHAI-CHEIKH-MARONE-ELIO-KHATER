@@ -45,8 +45,17 @@ def verifIntegrity(idTransaction):
 def addDeal (idSender, idReceiver, amount):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
+	#1er methode avec seulement le montant
+	sql = 'SELECT id_transaction, hash FROM deal;'
+	cur.execute(sql)
+	
+	for row in cur:
+		oldHash = row[1]
+		lastId = row[0]
+
 	amountFloat = float(amount)
 	key = str(amountFloat)
+	key = key + oldHash
 	#hash
 	ahash = blake2b(key.encode()).hexdigest()
 	sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
@@ -54,7 +63,7 @@ def addDeal (idSender, idReceiver, amount):
 	connexion.commit()
 	cur.close()
 	connexion.close()
-	return 'Deal Done.\n', 200
+	return 'Deal '+str(oldHash)+' Done.\n', 200
 
 @app.route('/deal/<idPerson>', methods=['GET'])
 def getDealPerson (idPerson):
