@@ -45,8 +45,10 @@ $ chmod +x modifyTransaction.sh
 $ ./modifyTransaction.sh
 
 ```
-That changes the amount value by 8000 for example
+1°) That changes the amount value by 8000 for example
 So for that i change execute() function of tchai.py by executescript(). Because execute() execute one statement at a time.
+
+2°) Delete transaction
 
 ## Hash
 Hash function : BLAKE2b()

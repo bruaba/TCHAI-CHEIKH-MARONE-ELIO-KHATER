@@ -9,8 +9,10 @@ app = Flask(__name__)
 def hello():
 	return 'Hello \n', 200
 
-
 #integrity
+#cette fonction nous permet de verifier l'integrité d'une transaction.
+#elle nous dit que la transcation a été modifier ou non
+
 @app.route('/integrity/<idTransaction>', methods=['GET'])
 def verifIntegrity(idTransaction):
 	connexion = sqlite3.connect("DataBase/tchai.db")
@@ -31,9 +33,9 @@ def verifIntegrity(idTransaction):
 	cur.close()
 	connexion.close()
 	if newHash == oldHash:
-		return '<html><body> C\'est bon:' + oldHash + '</body></html>', 200
+		return '<html><body> C\'est bon</body></html>', 200
 	else :
-		return '<html><body> C\'est pas bon: ancien hash =' + oldHash + '<br> new hash =' + newHash + ' et </body></html>', 500
+		return '<html><body> Donnée corrompu </body></html>', 500
 	
 
 
@@ -45,6 +47,7 @@ def addDeal (idSender, idReceiver, amount):
 	cur = connexion.cursor()
 	amountFloat = float(amount)
 	key = str(amountFloat)
+	#hash
 	ahash = blake2b(key.encode()).hexdigest()
 	sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
 	cur.execute(sql,[amount, idSender, idReceiver, ahash])
