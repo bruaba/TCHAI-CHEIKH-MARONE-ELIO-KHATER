@@ -1,6 +1,7 @@
 from flask import *
-import sqlite3
 from hashlib import blake2b
+from Crypto.PublicKey import RSA
+import sqlite3
 
 app = Flask(__name__)
 
@@ -91,8 +92,8 @@ def addDeal (idSender, idReceiver, amount):
 		lastId = row[0]
 
 	amountFloat = float(amount)
-	key = str(amountFloat)
-	key = key + oldHash
+	key = str(amountFloat) + str(idSender) + str(idReceiver)
+	key = key + oldHash 
 	#hash
 	ahash = blake2b(key.encode()).hexdigest()
 	sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
@@ -189,7 +190,23 @@ def addUser (name, surname):
 	connexion.commit()
 	cur.close()
 	connexion.close()
-	return 'User created.\n', 200
+	#creation d´un couple de clés
+	key = RSA.generate(1024)
+
+	#afficher ses clés:
+	k = key.exportKey('PEM')
+	p = key.publickey().exportKey('PEM')
+
+	#sauvegarder ses clés dans des fichiers:
+	with open('private.pem','w') as kf:
+		kf.write(k.decode())
+		kf.close()
+
+	with open('public.pem','w') as pf:
+		pf.write(p.decode())
+		pf.close()
+
+	return 'User created your private key is '+ k +'.\n', 200
 
 app.run(host='0.0.0.0', debug=True)
 
