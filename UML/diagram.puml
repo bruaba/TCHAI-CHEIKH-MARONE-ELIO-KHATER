@@ -11,10 +11,6 @@ class Person {
 	+ Integer getId()
 }
 
-class Account {
-	- Integer id_account
-	- Float balance
-}
 
 class Deal {
 
@@ -27,7 +23,6 @@ class Deal {
 }
 
 Person "1..*" -- "1..*" Deal : to do
-Person "1" -- "1..*" Account : own
 
 @enduml
 ```

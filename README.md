@@ -17,14 +17,12 @@ Advanced Information Systems Project
 Design an electronic transaction system with guaranteed integrity, accessible by the HTTP protocol+
 
 
-
 ## Summary
 
 The project was composed of 3 big tasks that needed to be done:
-1-Define a transaction and all its elements.
-2-add hash to transaction and creating a secure environment.
-3-add asymmetrical cryptography to ensure user authenticity.
-
+* Define a transaction and all its elements.
+* add hash to transaction and creating a secure environment.
+* add asymmetrical cryptography to ensure user authenticity.
 
 
 
