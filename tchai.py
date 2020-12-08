@@ -19,14 +19,16 @@ def hello():
 def verifIntegrity(idTransaction):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
-	sql = 'SELECT amount, hash FROM deal WHERE id_transaction = ?;'
+	sql = 'SELECT amount, hash, sender, receiver  FROM deal WHERE id_transaction = ?;'
 	cur.execute(sql,[idTransaction])
 
 	result = "<table style='border:1px solid red'>"   
 	for row in cur:
 		result = result + "<tr>"
 		amount = row[0]
-		key = str(amount)
+		idSender = row[2]
+		idReceiver = row[3]
+		key = str(amount)  + str(idSender) + str(idReceiver)
 		newHash = blake2b(key.encode()).hexdigest()
 		oldHash = row[1]
 	
@@ -54,14 +56,16 @@ def verifIntegrityV3(idTransaction):
 		oldHashP = row[0]
 
 	oldHashP = str(oldHashP)
-	sql = 'SELECT amount, hash FROM deal WHERE id_transaction = ?;'
+	sql = 'SELECT amount, hash, sender, receiver FROM deal WHERE id_transaction = ?;'
 	cur.execute(sql,[idTransaction])
 
 	result = "<table style='border:1px solid red'>"   
 	for row in cur:
 		result = result + "<tr>"
 		amount = row[0]
-		key = str(amount)
+		idSender = row[2]
+		idReceiver = row[3]
+		key = str(amount)  + str(idSender) + str(idReceiver)
 		key = key + oldHashP
 		newHash = blake2b(key.encode()).hexdigest()
 		oldHash = row[1]
@@ -166,7 +170,7 @@ def getDeal ():
 def getBalance (idOwner):
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
-	sql = "SELECT balance FROM account WHERE owner  = ?"
+	sql = "SELECT sum(amount) FROM Deal WHERE sender  = ?"
 	cur.execute(sql,[idOwner])
 	for row in cur:
 		result = ""
