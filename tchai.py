@@ -1,7 +1,12 @@
-from flask import *
-from hashlib import blake2b
-from Crypto.PublicKey import RSA
+#librairie
 import sqlite3
+import binascii
+from flask import *
+from Crypto.PublicKey import RSA
+from Crypto.Signature.pkcs1_15 import PKCS115_SigScheme
+from Crypto.Hash import BLAKE2b
+from hashlib import blake2b
+
 
 app = Flask(__name__)
 
@@ -28,7 +33,7 @@ def verifIntegrity(idTransaction):
 		amount = row[0]
 		idSender = row[2]
 		idReceiver = row[3]
-		key = str(amount)  + str(idSender) + str(idReceiver)
+		key = str(idSender) + '|' + str(idReceiver)   + '|' +  str(amount)
 		newHash = blake2b(key.encode()).hexdigest()
 		oldHash = row[1]
 	
@@ -65,8 +70,8 @@ def verifIntegrityV3(idTransaction):
 		amount = row[0]
 		idSender = row[2]
 		idReceiver = row[3]
-		key = str(amount)  + str(idSender) + str(idReceiver)
-		key = key + oldHashP
+		key = str(idSender) + '|' + str(idReceiver)   + '|' + str(amount)
+		key = key + '|' + oldHashP
 		newHash = blake2b(key.encode()).hexdigest()
 		oldHash = row[1]
 	
@@ -83,6 +88,58 @@ def verifIntegrityV3(idTransaction):
 
 
 #Deal
+@app.route('/deal/<idSender>/<idReceiver>/<amount>/<signature>', methods=['POST'])
+def addDealWithSign (idSender, idReceiver, amount, signature):
+
+
+	key = str(idSender) + '|' + str(idReceiver)  + '|' + str(amount)
+
+	signature = binascii.unhexlify(signature.encode())
+
+	#importer des clés à partir d'un fichier
+	with open('publiccheikhmarone.pem','r') as fp:
+		pub = fp.read()
+		fp.close()
+
+	public = RSA.importKey(pub)
+
+
+	# Verify valid PKCS#1 v1.5 signature (RSAVP1)
+	hash = BLAKE2b.new()
+	hash.update(key.encode())
+	verifier = PKCS115_SigScheme(public)
+
+	try:
+		verifier.verify(hash, signature)
+		#print("Signature is valid.")
+		connexion = sqlite3.connect("DataBase/tchai.db")
+		cur = connexion.cursor()
+		#1er methode avec seulement le montant
+		sql = 'SELECT id_transaction, hash FROM deal;'
+		cur.execute(sql)
+
+		for row in cur:
+			oldHash = row[1]
+			lastId = row[0]
+
+		amountFloat = float(amount)
+		key = str(idSender) + '|' + str(idReceiver)  + '|' + str(amountFloat)	
+		key = key + '|' + oldHash 
+		#hash
+		ahash = blake2b(key.encode()).hexdigest()
+		idSender = int(idSender,  16)
+		sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
+		cur.execute(sql,[amount, idSender, idReceiver, ahash])
+		connexion.commit()
+		cur.close()
+		connexion.close()
+		return 'Deal Done.\n', 200
+
+	except:
+		#print("Signature is invalid.")
+		return 'Vous n\'êtes pas '+ idSender +' .\n', 403
+
+
 @app.route('/deal/<idSender>/<idReceiver>/<amount>', methods=['POST'])
 def addDeal (idSender, idReceiver, amount):
 	connexion = sqlite3.connect("DataBase/tchai.db")
@@ -96,8 +153,8 @@ def addDeal (idSender, idReceiver, amount):
 		lastId = row[0]
 
 	amountFloat = float(amount)
-	key = str(amountFloat) + str(idSender) + str(idReceiver)
-	key = key + oldHash 
+	key = str(idSender) + '|' + str(idReceiver) + '|' +str(amountFloat)
+	key = key + '|' + oldHash 
 	#hash
 	ahash = blake2b(key.encode()).hexdigest()
 	sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
@@ -187,13 +244,6 @@ def getBalance (idOwner):
 
 @app.route('/user/<name>/<surname>', methods=['POST'])
 def addUser (name, surname):
-	connexion = sqlite3.connect("DataBase/tchai.db")
-	cur = connexion.cursor()
-	sql = "INSERT INTO person (name, surname) VALUES (?,?)"
-	cur.execute(sql,[name, surname])
-	connexion.commit()
-	cur.close()
-	connexion.close()
 	#creation d´un couple de clés
 	key = RSA.generate(1024)
 
@@ -201,16 +251,58 @@ def addUser (name, surname):
 	k = key.exportKey('PEM')
 	p = key.publickey().exportKey('PEM')
 
+	k_name = 'private'+name+surname+'.pem'
+	p_name = 'public'+name+surname+'.pem'
+
 	#sauvegarder ses clés dans des fichiers:
-	with open('private.pem','w') as kf:
+	with open(k_name,'w') as kf:
 		kf.write(k.decode())
 		kf.close()
 
-	with open('public.pem','w') as pf:
+	with open(p_name,'w') as pf:
 		pf.write(p.decode())
 		pf.close()
 
-	return 'User created your private key is '+ k +'.\n', 200
+	connexion = sqlite3.connect("DataBase/tchai.db")
+	cur = connexion.cursor()
+	sql = "INSERT INTO person (name, surname, public_key) VALUES (?,?, ?)"
+	cur.execute(sql,[name, surname, hex(key.n)])
+	connexion.commit()
+	cur.close()
+	connexion.close()
+	
+
+	return 'User created your private key is '+ str(k) +'.\n', 200
+
+
+#Person
+
+@app.route('/sign/<sender>/<receiver>/<amount>', methods=['POST'])
+def addUserWithSign (sender, receiver, amount):
+	#creation d´un couple de clés
+	key = RSA.generate(1024)
+
+	#afficher ses clés:
+	k = key.exportKey('PEM')
+	p = key.publickey().exportKey('PEM')
+
+	k_name = 'private'+name+surname+'.pem'
+	p_name = 'public'+name+surname+'.pem'
+
+	#sauvegarder ses clés dans des fichiers:
+	with open(k_name,'w') as kf:
+		kf.write(k.decode())
+		kf.close()
+
+	with open(p_name,'w') as pf:
+		pf.write(p.decode())
+		pf.close()
+
+	leHash = blake2b(msg.encode()).hexdigest()
+	signature = pow(leHash, key.d, key.n)
+	print("Signature:", hex(signature))
+
+	return 'Signature '+ str(hex(signature)) +'.\n', 200
 
 app.run(host='0.0.0.0', debug=True)
 

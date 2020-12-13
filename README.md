@@ -7,6 +7,7 @@ Advanced Information Systems Project
 * [Technology](#technology)
 * [Diagram](#diagram)
 * [Setup](#setup)
+* [Transaction](#transaction)
 * [Test](#test)
 * [Hash](#hash)
 * [Tag](#tag)
@@ -23,8 +24,6 @@ The project was composed of 3 big tasks that needed to be done:
 * Define a transaction and all its elements.
 * add hash to transaction and creating a secure environment.
 * add asymmetrical cryptography to ensure user authenticity.
-
-
 
 
 ## Technology
@@ -46,6 +45,42 @@ $ apt-get install sqlite3
 $ python3 tchai.py
 
 ```
+
+## Transaction
+
+You can perform a transaction directly using a CURL request
+example
+
+````
+$ curl -X POST "http://0.0.0.0:5000/deal/1/2/34"
+
+````
+
+Here user 1 sends 34 to user 2
+
+To authenticate the user, we first encrypt the message by doing
+
+For example if 1 wants to send 450 to 2
+
+````
+$ python3 signature.py "1|2|450"
+
+````
+He returns the signature to us.
+
+
+We can check if the encryption went well by making the message followed by the signature
+Here the signature is equal to 1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126
+
+````
+$ Python3 signature.py "1|2|450" "1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126"
+
+````
+Before sending the request with the signature to save it
+
+````
+$ Curl -X POST "http://0.0.0.0:5000/deal/1/2/450/1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126"
+````
 
 ## Test
 1st test it's changing amount value
