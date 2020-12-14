@@ -91,19 +91,21 @@ def verifIntegrityV3(idTransaction):
 @app.route('/deal/<idSender>/<idReceiver>/<amount>/<signature>', methods=['POST'])
 def addDealWithSign (idSender, idReceiver, amount, signature):
 
-
 	key = str(idSender) + '|' + str(idReceiver)  + '|' + str(amount)
 
 	signature = binascii.unhexlify(signature.encode())
 
-	#importer des clés à partir d'un fichier
-	with open('publiccheikhmarone.pem','r') as fp:
-		pub = fp.read()
-		fp.close()
+	connexion = sqlite3.connect("DataBase/tchai.db")
+	cur = connexion.cursor()
+	#1er methode avec seulement le montant
+	sql = 'SELECT public_key FROM person where id_person=?;'
+	cur.execute(sql,[idSender])
+
+	for row in cur:
+		pub = row[0]
 
 	public = RSA.importKey(pub)
-
-
+	
 	# Verify valid PKCS#1 v1.5 signature (RSAVP1)
 	hash = BLAKE2b.new()
 	hash.update(key.encode())
@@ -112,8 +114,6 @@ def addDealWithSign (idSender, idReceiver, amount, signature):
 	try:
 		verifier.verify(hash, signature)
 		#print("Signature is valid.")
-		connexion = sqlite3.connect("DataBase/tchai.db")
-		cur = connexion.cursor()
 		#1er methode avec seulement le montant
 		sql = 'SELECT id_transaction, hash FROM deal;'
 		cur.execute(sql)
@@ -127,7 +127,6 @@ def addDealWithSign (idSender, idReceiver, amount, signature):
 		key = key + '|' + oldHash 
 		#hash
 		ahash = blake2b(key.encode()).hexdigest()
-		idSender = int(idSender,  16)
 		sql = "INSERT INTO deal (amount, sender, receiver, hash) VALUES (?,?,?,?)"
 		cur.execute(sql,[amount, idSender, idReceiver, ahash])
 		connexion.commit()
@@ -258,21 +257,21 @@ def addUser (name, surname):
 	with open(k_name,'w') as kf:
 		kf.write(k.decode())
 		kf.close()
-
+	"""
 	with open(p_name,'w') as pf:
 		pf.write(p.decode())
 		pf.close()
-
+	"""
 	connexion = sqlite3.connect("DataBase/tchai.db")
 	cur = connexion.cursor()
 	sql = "INSERT INTO person (name, surname, public_key) VALUES (?,?, ?)"
-	cur.execute(sql,[name, surname, hex(key.n)])
+	cur.execute(sql,[name, surname, str(p.decode())])
 	connexion.commit()
 	cur.close()
 	connexion.close()
 	
 
-	return 'User created your private key is '+ str(k) +'.\n', 200
+	return 'User created \n your private key is in a file named with your name \n your public key is \n'+ str(p.decode()) +'.\n', 200
 
 
 #Person

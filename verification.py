@@ -8,13 +8,14 @@ import binascii
 
 
 transaction = sys.argv[1]
-signature = sys.argv[2]
+name_file = sys.argv[2]
+signature = sys.argv[3]
 
 signature = binascii.unhexlify(signature.encode())
 
 
 #importer des clés à partir d'un fichier
-with open('publiccheikhmarone.pem','r') as fp:
+with open(name_file,'r') as fp:
 	pub = fp.read()
 	fp.close()
 

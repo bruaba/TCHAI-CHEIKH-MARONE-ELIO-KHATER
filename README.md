@@ -17,13 +17,32 @@ Advanced Information Systems Project
 ## General info
 Design an electronic transaction system with guaranteed integrity, accessible by the HTTP protocol+
 
-
-## Summary
-
 The project was composed of 3 big tasks that needed to be done:
 * Define a transaction and all its elements.
 * add hash to transaction and creating a secure environment.
 * add asymmetrical cryptography to ensure user authenticity.
+
+You can perform the following actions:
+
+* add user
+````
+$ curl -X POST "http://0.0.0.0:5000/user/name/surname"
+````
+with name is your name and surname is your surname
+
+
+* create deal
+````
+$ curl -X POST "http://0.0.0.0:5000/deal/idSender/idRecever/amount/signature"
+````
+with idSender is a integer (exemple = 10), idRecever is a integer
+amount is a integer and signature is a string generate after execution signature script without the b
+
+* verify integrity of database
+````
+$ curl -X GET "http://0.0.0.0:5000/integrity/v3/idChamps"
+````
+with idChamps is an integer, it's the id of a field in database
 
 
 ## Technology
@@ -43,7 +62,6 @@ $ apt-get install python3-pip
 $ pip3 install flask
 $ apt-get install sqlite3
 $ python3 tchai.py
-
 ```
 
 ## Transaction
@@ -53,7 +71,6 @@ example
 
 ````
 $ curl -X POST "http://0.0.0.0:5000/deal/1/2/34"
-
 ````
 
 Here user 1 sends 34 to user 2
@@ -64,7 +81,6 @@ For example if 1 wants to send 450 to 2
 
 ````
 $ python3 signature.py "1|2|450"
-
 ````
 He returns the signature to us.
 
@@ -73,8 +89,7 @@ We can check if the encryption went well by making the message followed by the s
 Here the signature is equal to 1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126
 
 ````
-$ Python3 signature.py "1|2|450" "1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126"
-
+$ Python3 verification.py "1|2|450" "1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126"
 ````
 Before sending the request with the signature to save it
 
@@ -86,10 +101,9 @@ $ Curl -X POST "http://0.0.0.0:5000/deal/1/2/450/1efdf2d99bedeea5a7a99720ea71166
 1st test it's changing amount value
 
 ```
-$ cd /Test
+$ cd Test/
 $ chmod +x modifyTransaction.sh
 $ ./modifyTransaction.sh
-
 ```
 1°) That changes the amount value by 8000 for example
 So for that i change execute() function of tchai.py by executescript(). Because execute() execute one statement at a time.
