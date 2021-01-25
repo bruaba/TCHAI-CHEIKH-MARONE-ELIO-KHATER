@@ -75,12 +75,14 @@ $ curl -X POST "http://0.0.0.0:5000/deal/1/2/34"
 
 Here user 1 sends 34 to user 2
 
+privatekeyname.pem is the private key of current user.
+
 To authenticate the user, we first encrypt the message by doing
 
 For example if 1 wants to send 450 to 2
 
 ````
-$ python3 signature.py "1|2|450"
+$ python3 signature.py "1|2|450" "privatekeyname.pem"
 ````
 He returns the signature to us.
 
@@ -89,7 +91,7 @@ We can check if the encryption went well by making the message followed by the s
 Here the signature is equal to 1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126
 
 ````
-$ Python3 verification.py "1|2|450" "1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126"
+$ Python3 verification.py "1|2|450" "privatekeyname.pem" "1efdf2d99bedeea5a7a99720ea711662958d0c75300c4c68d2bad3d1888069cb358978238313d34b50e7c931ae6b9f273727662b35e7385cb85a25670bfd3925523f5a9bccd4ede47c33af0592b2021fd33247df2677e9ad6806e7235b836f7a88293a14d32f7266949f93f2d64ea68e8754e265811116477484af391a0a1126"
 ````
 Before sending the request with the signature to save it
 
